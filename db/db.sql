@@ -227,6 +227,85 @@ END$$
 
 DELIMITER ;
 
+-- ============================================================
+-- PROCEDURES
+-- ============================================================
+
+-- Procedure : Returns all campaigns of a given brand
+DELIMITER $$
+
+CREATE PROCEDURE GetBrandCampaignSummary(IN p_brand_id INT)
+BEGIN
+    SELECT 
+        c.campaign_id,
+        c.title,
+        c.budget,
+        c.start_date,
+        c.end_date,
+        c.status,
+        COUNT(DISTINCT a.application_id) AS total_applications,
+        SUM(CASE WHEN a.status = 'accepted' THEN 1 ELSE 0 END) AS accepted_applications,
+        CASE 
+            WHEN c.status = 'completed' THEN c.budget
+            ELSE 0
+        END AS completed_budget_contribution
+    FROM CAMPAIGN c
+    LEFT JOIN APPLICATION a ON c.campaign_id = a.campaign_id
+    WHERE c.brand_id = p_brand_id
+    GROUP BY c.campaign_id, c.title, c.budget, c.start_date, c.end_date, c.status
+    ORDER BY c.start_date DESC;
+END$$
+
+DELIMITER ;
+
+-- Procedure : Returns a detailed performance report for a creator
+DELIMITER $$
+
+CREATE PROCEDURE GetCreatorPerformance(IN p_creator_id INT)
+BEGIN
+    SELECT 
+        cr.display_name,
+        cr.niche,
+        cr.trust_score,
+        COALESCE((
+            SELECT SUM(c.budget)
+            FROM APPLICATION a
+            JOIN CAMPAIGN c ON a.campaign_id = c.campaign_id
+            WHERE a.creator_id = p_creator_id
+              AND a.status = 'accepted'
+              AND c.status = 'completed'
+        ), 0) AS total_revenue,
+        COALESCE((
+            SELECT AVG(er.engagement_rate)
+            FROM APPLICATION a
+            JOIN DELIVERABLE d ON a.application_id = d.application_id
+            JOIN ENGAGEMENT_REPORT er ON d.deliverable_id = er.deliverable_id
+            WHERE a.creator_id = p_creator_id
+              AND a.status = 'accepted'
+        ), 0) AS avg_engagement_rate,
+        COUNT(DISTINCT a.application_id) AS total_accepted_applications,
+        (
+            SELECT final_score 
+            FROM CREDIBILITY_SCORE 
+            WHERE creator_id = p_creator_id 
+            ORDER BY calculated_at DESC 
+            LIMIT 1
+        ) AS latest_credibility_score,
+        (
+            SELECT calculated_at 
+            FROM CREDIBILITY_SCORE 
+            WHERE creator_id = p_creator_id 
+            ORDER BY calculated_at DESC 
+            LIMIT 1
+        ) AS score_calculated_on
+    FROM CREATOR cr
+    LEFT JOIN APPLICATION a ON cr.creator_id = a.creator_id AND a.status = 'accepted'
+    WHERE cr.creator_id = p_creator_id
+    GROUP BY cr.creator_id;
+END$$
+
+DELIMITER ;
+
 
 -- ============================================================
 -- DATA
