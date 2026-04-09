@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreatorDAO {
+public class CreatorDAO implements BaseDAO {
 
     public Creator getCreatorById(int creatorId) {
         String query = "SELECT * FROM CREATOR WHERE creator_id = ?";
@@ -73,5 +73,18 @@ public class CreatorDAO {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    @Override
+    public boolean delete(int id) throws java.sql.SQLException {
+        String query = "DELETE FROM Creators WHERE creator_id = ?";
+        try (java.sql.Connection conn = com.proofy.util.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

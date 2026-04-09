@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ApplicationDAO {
+public class ApplicationDAO implements BaseDAO {
 
     public boolean applyToCampaign(int creatorId, int campaignId) {
         String query = "INSERT INTO APPLICATION (creator_id, campaign_id, applied_at, status) VALUES (?, ?, CURRENT_DATE, 'pending')";
@@ -94,5 +94,19 @@ public class ApplicationDAO {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    // Implementation of BaseDAO (Polymorphism)
+    @Override
+    public boolean delete(int id) throws java.sql.SQLException {
+        String query = "DELETE FROM Applications WHERE application_id = ?";
+        try (java.sql.Connection conn = com.proofy.util.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

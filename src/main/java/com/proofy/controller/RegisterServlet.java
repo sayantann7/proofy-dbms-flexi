@@ -1,12 +1,14 @@
 package com.proofy.controller;
 
+import java.io.IOException;
+
 import com.proofy.service.AuthService;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
@@ -31,6 +33,11 @@ public class RegisterServlet extends HttpServlet {
         String nicheOrIndustry = request.getParameter("nicheOrIndustry");
         String audienceOrWebsite = request.getParameter("audienceOrWebsite");
         String bio = request.getParameter("bio");
+
+        if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            response.sendRedirect("register.jsp?error=Invalid+email+format.");
+            return;
+        }
 
         boolean success = authService.register(email, password, role, name, nicheOrIndustry, audienceOrWebsite, bio);
 

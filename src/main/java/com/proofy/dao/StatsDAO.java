@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatsDAO {
+public class StatsDAO implements BaseDAO {
 
     public List<PlatformStat> getPlatformStats(int creatorId) {
         List<PlatformStat> stats = new ArrayList<>();
@@ -132,5 +132,18 @@ public class StatsDAO {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    @Override
+    public boolean delete(int id) throws java.sql.SQLException {
+        String query = "DELETE FROM Platform_Stats WHERE stat_id = ?";
+        try (java.sql.Connection conn = com.proofy.util.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

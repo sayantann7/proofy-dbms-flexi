@@ -1,6 +1,6 @@
-package com.proofy.model;
+﻿package com.proofy.model;
 
-public class Brand {
+public class Brand extends User {
     private int brandId;
     private String brandName;
     private String industry;
@@ -20,3 +20,5 @@ public class Brand {
     public String getWebsite() { return website; }
     public void setWebsite(String website) { this.website = website; }
 }
+
+

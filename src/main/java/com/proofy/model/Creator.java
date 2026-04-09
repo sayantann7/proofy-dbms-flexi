@@ -1,6 +1,6 @@
-package com.proofy.model;
+﻿package com.proofy.model;
 
-public class Creator {
+public class Creator extends User {
     private int creatorId;
     private String displayName;
     private String niche;
@@ -28,3 +28,5 @@ public class Creator {
     public double getTrustScore() { return trustScore; }
     public void setTrustScore(double trustScore) { this.trustScore = trustScore; }
 }
+
+

@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BrandDAO {
+public class BrandDAO implements BaseDAO {
 
     public Brand getBrandById(int brandId) {
         String query = "SELECT * FROM BRAND WHERE brand_id = ?";
@@ -45,5 +45,19 @@ public class BrandDAO {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    // Implementation of BaseDAO (Polymorphism)
+    @Override
+    public boolean delete(int id) throws java.sql.SQLException {
+        String query = "DELETE FROM Brands WHERE brand_id = ?";
+        try (java.sql.Connection conn = com.proofy.util.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

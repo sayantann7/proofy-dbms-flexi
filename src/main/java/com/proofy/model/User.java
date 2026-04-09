@@ -1,4 +1,4 @@
-package com.proofy.model;
+﻿package com.proofy.model;
 
 import java.sql.Date;
 
@@ -29,3 +29,5 @@ public class User {
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 }
+
+

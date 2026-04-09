@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CampaignDAO {
+public class CampaignDAO implements BaseDAO {
 
     public List<Campaign> getCampaignsByBrand(int brandId) {
         List<Campaign> campaigns = new ArrayList<>();
@@ -126,6 +126,19 @@ public class CampaignDAO {
             if (conn != null) {
                 try { conn.setAutoCommit(true); conn.close(); } catch (SQLException ex) { ex.printStackTrace(); }
             }
+        }
+    }
+    
+    @Override
+    public boolean delete(int id) throws java.sql.SQLException {
+        String query = "DELETE FROM Campaigns WHERE campaign_id = ?";
+        try (java.sql.Connection conn = com.proofy.util.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
